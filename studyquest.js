@@ -55,3 +55,640 @@ $('snapshot').innerHTML=`<p><b>${ch.length}</b> chapters</p><p><b>${cd.length}</
 renderCase()
 }
 render();
+// ==========================================
+// ACADEMIC INTEGRITY STUDIO
+// Part 1: State, helpers, and clear function
+// ==========================================
+
+const integrityState = {
+  score: 0,
+  wordCount: 0,
+  sentenceCount: 0,
+  averageSentenceLength: 0,
+  citationCount: 0,
+  repeatedPhrases: [],
+  writingNotes: [],
+  citationNotes: [],
+  similarityNotes: [],
+  lastReviewedText: ""
+};
+
+function getIntegrityElement(id) {
+  return document.getElementById(id);
+}
+
+function resetIntegrityState() {
+  integrityState.score = 0;
+  integrityState.wordCount = 0;
+  integrityState.sentenceCount = 0;
+  integrityState.averageSentenceLength = 0;
+  integrityState.citationCount = 0;
+  integrityState.repeatedPhrases = [];
+  integrityState.writingNotes = [];
+  integrityState.citationNotes = [];
+  integrityState.similarityNotes = [];
+  integrityState.lastReviewedText = "";
+}
+
+function clearIntegrityReview() {
+  const fieldsToClear = [
+    "integrityTitle",
+    "integrityCourse",
+    "integrityText",
+    "integrityProcess",
+    "integrityTools"
+  ];
+
+  fieldsToClear.forEach(function (id) {
+    const field = getIntegrityElement(id);
+
+    if (field) {
+      field.value = "";
+    }
+  });
+
+  resetIntegrityState();
+
+  const scoreBar = getIntegrityElement("integrityScoreBar");
+
+  if (scoreBar) {
+    scoreBar.style.width = "0%";
+  }
+
+  const scoreText = getIntegrityElement("integrityScoreText");
+
+  if (scoreText) {
+    scoreText.textContent = "No review completed";
+  }
+
+  const summary = getIntegrityElement("integritySummary");
+
+  if (summary) {
+    summary.innerHTML = `
+      <div class="item">
+        Paste writing and run a review to generate a transparency snapshot.
+      </div>
+    `;
+  }
+
+  const writingResult = getIntegrityElement("writingAnalysisResult");
+
+  if (writingResult) {
+    writingResult.textContent = "No writing analysis yet.";
+  }
+
+  const citationResult = getIntegrityElement("citationResult");
+
+  if (citationResult) {
+    citationResult.textContent = "No citation review yet.";
+  }
+
+  const similarityResult = getIntegrityElement("similarityResult");
+
+  if (similarityResult) {
+    similarityResult.textContent = "No similarity review yet.";
+  }
+
+  const report = getIntegrityElement("integrityReport");
+
+  if (report) {
+    report.textContent = "No report generated yet.";
+  }
+
+  const metricDefaults = {
+    integrityWordCount: "0",
+    integritySentenceCount: "0",
+    integritySentenceAverage: "0",
+    integrityCitationCount: "0"
+  };
+
+  Object.entries(metricDefaults).forEach(function ([id, value]) {
+    const element = getIntegrityElement(id);
+
+    if (element) {
+      element.textContent = value;
+    }
+  });
+}
+// ==========================================
+// Part 2: Review and scoring engine
+// ==========================================
+
+function getIntegrityWords(text) {
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter(function (word) {
+      return word.length > 0;
+    });
+}
+
+function getIntegritySentences(text) {
+  return text
+    .split(/[.!?]+/)
+    .map(function (sentence) {
+      return sentence.trim();
+    })
+    .filter(function (sentence) {
+      return sentence.length > 0;
+    });
+}
+
+function findRepeatedIntegrityPhrases(words) {
+  const phraseCounts = {};
+  const repeated = [];
+
+  for (let i = 0; i <= words.length - 4; i += 1) {
+    const phrase = words
+      .slice(i, i + 4)
+      .join(" ")
+      .toLowerCase()
+      .replace(/[^\w\s']/g, "");
+
+    if (phrase.length < 12) {
+      continue;
+    }
+
+    phraseCounts[phrase] = (phraseCounts[phrase] || 0) + 1;
+  }
+
+  Object.entries(phraseCounts).forEach(function ([phrase, count]) {
+    if (count > 1) {
+      repeated.push({
+        phrase: phrase,
+        count: count
+      });
+    }
+  });
+
+  return repeated
+    .sort(function (a, b) {
+      return b.count - a.count;
+    })
+    .slice(0, 5);
+}
+
+function countIntegrityCitations(text) {
+  const parentheticalCitations =
+    text.match(/\([A-Z][A-Za-z'-]+(?:\s+et al\.)?,?\s+\d{4}[a-z]?\)/g) || [];
+
+  const narrativeCitations =
+    text.match(/[A-Z][A-Za-z'-]+\s+\(\d{4}[a-z]?\)/g) || [];
+
+  const numberedCitations =
+    text.match(/\[\d+(?:,\s*\d+)*\]/g) || [];
+
+  const quotedPassages =
+    text.match(/["“][^"”]{8,}["”]/g) || [];
+
+  return (
+    parentheticalCitations.length +
+    narrativeCitations.length +
+    numberedCitations.length +
+    quotedPassages.length
+  );
+}
+
+function calculateSentenceVariation(sentences) {
+  if (sentences.length < 2) {
+    return 0;
+  }
+
+  const lengths = sentences.map(function (sentence) {
+    return getIntegrityWords(sentence).length;
+  });
+
+  const average =
+    lengths.reduce(function (total, length) {
+      return total + length;
+    }, 0) / lengths.length;
+
+  const variance =
+    lengths.reduce(function (total, length) {
+      return total + Math.pow(length - average, 2);
+    }, 0) / lengths.length;
+
+  return Math.sqrt(variance);
+}
+
+function runIntegrityReview() {
+  const textField = getIntegrityElement("integrityText");
+  const text = textField ? textField.value.trim() : "";
+
+  if (!text) {
+    alert("Paste some writing before running the review.");
+    return;
+  }
+
+  const words = getIntegrityWords(text);
+  const sentences = getIntegritySentences(text);
+  const wordCount = words.length;
+  const sentenceCount = sentences.length;
+
+  const averageSentenceLength =
+    sentenceCount > 0
+      ? Math.round((wordCount / sentenceCount) * 10) / 10
+      : 0;
+
+  const citationCount = countIntegrityCitations(text);
+  const repeatedPhrases = findRepeatedIntegrityPhrases(words);
+  const sentenceVariation = calculateSentenceVariation(sentences);
+
+  const hasReferenceSection =
+    /\b(references|works cited|bibliography)\b/i.test(text);
+
+  const firstPersonCount = (
+    text.match(/\b(I|me|my|mine|we|our|ours)\b/gi) || []
+  ).length;
+
+  const transitionCount = (
+    text.match(
+      /\b(however|therefore|furthermore|moreover|consequently|although|because|in contrast|for example|for instance)\b/gi
+    ) || []
+  ).length;
+
+  const writingNotes = [];
+  const citationNotes = [];
+  const similarityNotes = [];
+
+  let score = 100;
+
+  if (wordCount < 100) {
+    writingNotes.push(
+      "The sample is short, so writing-pattern conclusions are limited."
+    );
+    score -= 8;
+  } else {
+    writingNotes.push(
+      "The document is long enough for a basic writing-pattern review."
+    );
+  }
+
+  if (averageSentenceLength < 8) {
+    writingNotes.push(
+      "Sentences are generally short. Check whether ideas need fuller explanation."
+    );
+    score -= 4;
+  } else if (averageSentenceLength > 28) {
+    writingNotes.push(
+      "Sentences are generally long. Review for clarity and possible run-ons."
+    );
+    score -= 5;
+  } else {
+    writingNotes.push(
+      "Average sentence length falls within a broadly readable range."
+    );
+  }
+
+  if (sentenceVariation < 3 && sentenceCount >= 5) {
+    writingNotes.push(
+      "Sentence lengths are unusually uniform. Consider varying rhythm and structure."
+    );
+    score -= 7;
+  } else if (sentenceCount >= 5) {
+    writingNotes.push(
+      "The document shows noticeable variation in sentence length."
+    );
+  }
+
+  if (transitionCount === 0 && sentenceCount >= 5) {
+    writingNotes.push(
+      "Few common transitions were detected. Check the flow between ideas."
+    );
+    score -= 3;
+  } else {
+    writingNotes.push(
+      transitionCount + " transition indicator(s) were detected."
+    );
+  }
+
+  if (firstPersonCount > 0) {
+    writingNotes.push(
+      firstPersonCount +
+        " first-person reference(s) were found. Confirm that the assignment allows them."
+    );
+  }
+
+  if (citationCount === 0) {
+    citationNotes.push(
+      "No clear in-text citation or quotation indicators were detected."
+    );
+    score -= 10;
+  } else {
+    citationNotes.push(
+      citationCount + " citation or quotation indicator(s) were detected."
+    );
+  }
+
+  if (hasReferenceSection) {
+    citationNotes.push(
+      "A reference-style section heading appears in the document."
+    );
+  } else {
+    citationNotes.push(
+      "No References, Works Cited, or Bibliography heading was detected."
+    );
+
+    if (citationCount > 0) {
+      score -= 4;
+    }
+  }
+
+  if (repeatedPhrases.length === 0) {
+    similarityNotes.push(
+      "No repeated four-word passages were detected within this document."
+    );
+  } else {
+    similarityNotes.push(
+      repeatedPhrases.length +
+        " repeated four-word passage pattern(s) were detected."
+    );
+
+    repeatedPhrases.forEach(function (item) {
+      similarityNotes.push(
+        '"' + item.phrase + '" appears ' + item.count + " times."
+      );
+    });
+
+    score -= Math.min(repeatedPhrases.length * 3, 12);
+  }
+
+  score = Math.max(0, Math.min(100, score));
+
+  integrityState.score = score;
+  integrityState.wordCount = wordCount;
+  integrityState.sentenceCount = sentenceCount;
+  integrityState.averageSentenceLength = averageSentenceLength;
+  integrityState.citationCount = citationCount;
+  integrityState.repeatedPhrases = repeatedPhrases;
+  integrityState.writingNotes = writingNotes;
+  integrityState.citationNotes = citationNotes;
+  integrityState.similarityNotes = similarityNotes;
+  integrityState.lastReviewedText = text;
+
+  const wordCountElement = getIntegrityElement("integrityWordCount");
+  const sentenceCountElement = getIntegrityElement(
+    "integritySentenceCount"
+  );
+  const sentenceAverageElement = getIntegrityElement(
+    "integritySentenceAverage"
+  );
+  const citationCountElement = getIntegrityElement(
+    "integrityCitationCount"
+  );
+
+  if (wordCountElement) {
+    wordCountElement.textContent = String(wordCount);
+  }
+
+  if (sentenceCountElement) {
+    sentenceCountElement.textContent = String(sentenceCount);
+  }
+
+  if (sentenceAverageElement) {
+    sentenceAverageElement.textContent =
+      String(averageSentenceLength) + " words";
+  }
+
+  if (citationCountElement) {
+    citationCountElement.textContent = String(citationCount);
+  }
+
+  const scoreBar = getIntegrityElement("integrityScoreBar");
+
+  if (scoreBar) {
+    scoreBar.style.width = score + "%";
+  }
+
+  const scoreText = getIntegrityElement("integrityScoreText");
+
+  if (scoreText) {
+    scoreText.textContent = score + "% review score";
+  }
+
+  const summary = getIntegrityElement("integritySummary");
+
+  if (summary) {
+    summary.innerHTML = `
+      <div class="item">
+        <strong>Writing sample:</strong> ${wordCount} words
+      </div>
+      <div class="item">
+        <strong>Citation indicators:</strong> ${citationCount}
+      </div>
+      <div class="item">
+        <strong>Repeated passage patterns:</strong> ${repeatedPhrases.length}
+      </div>
+      <div class="item">
+        <strong>Reminder:</strong> This score measures review signals, not authorship or misconduct.
+      </div>
+    `;
+  }
+
+  const writingResult = getIntegrityElement("writingAnalysisResult");
+
+  if (writingResult) {
+    writingResult.innerHTML = writingNotes
+      .map(function (note) {
+        return "<p>" + note + "</p>";
+      })
+      .join("");
+  }
+
+  const citationResult = getIntegrityElement("citationResult");
+
+  if (citationResult) {
+    citationResult.innerHTML = citationNotes
+      .map(function (note) {
+        return "<p>" + note + "</p>";
+      })
+      .join("");
+  }
+
+  const similarityResult = getIntegrityElement("similarityResult");
+
+  if (similarityResult) {
+    similarityResult.innerHTML = similarityNotes
+      .map(function (note) {
+        return "<p>" + note + "</p>";
+      })
+      .join("");
+  }
+}
+// ==========================================
+// Part 3: Report generation and copy button
+// ==========================================
+
+function getIntegrityFieldValue(id, fallback) {
+  const field = getIntegrityElement(id);
+
+  if (!field || !field.value.trim()) {
+    return fallback;
+  }
+
+  return field.value.trim();
+}
+
+function formatIntegrityNotes(title, notes) {
+  const safeNotes =
+    Array.isArray(notes) && notes.length > 0
+      ? notes
+      : ["No notes available."];
+
+  return (
+    title +
+    "\n" +
+    safeNotes
+      .map(function (note) {
+        return "- " + note;
+      })
+      .join("\n")
+  );
+}
+
+function buildIntegrityReport() {
+  const title = getIntegrityFieldValue(
+    "integrityTitle",
+    "Untitled Assignment"
+  );
+
+  const course = getIntegrityFieldValue(
+    "integrityCourse",
+    "Course not provided"
+  );
+
+  const process = getIntegrityFieldValue(
+    "integrityProcess",
+    "No writing-process statement provided."
+  );
+
+  const tools = getIntegrityFieldValue(
+    "integrityTools",
+    "No tools or assistance disclosed."
+  );
+
+  const reviewDate = new Date().toLocaleString();
+
+  const reportSections = [
+    "ACADEMIC INTEGRITY TRANSPARENCY REPORT",
+    "======================================",
+    "",
+    "Assignment: " + title,
+    "Course: " + course,
+    "Generated: " + reviewDate,
+    "",
+    "INTEGRITY SNAPSHOT",
+    "- Review score: " + integrityState.score + "%",
+    "- Word count: " + integrityState.wordCount,
+    "- Sentence count: " + integrityState.sentenceCount,
+    "- Average sentence length: " +
+      integrityState.averageSentenceLength +
+      " words",
+    "- Citation or quotation indicators: " +
+      integrityState.citationCount,
+    "- Repeated passage patterns: " +
+      integrityState.repeatedPhrases.length,
+    "",
+    formatIntegrityNotes(
+      "WRITING ANALYSIS",
+      integrityState.writingNotes
+    ),
+    "",
+    formatIntegrityNotes(
+      "CITATION REVIEW",
+      integrityState.citationNotes
+    ),
+    "",
+    formatIntegrityNotes(
+      "SIMILARITY INDICATORS",
+      integrityState.similarityNotes
+    ),
+    "",
+    "WRITING PROCESS STATEMENT",
+    process,
+    "",
+    "TOOLS AND ASSISTANCE DISCLOSURE",
+    tools,
+    "",
+    "LIMITATIONS",
+    "This report uses basic document-pattern checks. It does not determine authorship, prove misconduct, compare the writing against external databases, or replace instructor review.",
+    "",
+    "STUDENT TRANSPARENCY STATEMENT",
+    "I reviewed the information above and provided the writing-process and assistance disclosures to the best of my knowledge."
+  ];
+
+  return reportSections.join("\n");
+}
+
+function generateIntegrityReport() {
+  if (!integrityState.lastReviewedText) {
+    alert("Run the integrity review before generating a report.");
+    return;
+  }
+
+  const reportText = buildIntegrityReport();
+  const report = getIntegrityElement("integrityReport");
+
+  if (report) {
+    report.textContent = reportText;
+  }
+}
+
+async function copyIntegrityReport() {
+  const report = getIntegrityElement("integrityReport");
+
+  if (!report || !report.textContent.trim()) {
+    alert("Generate a report before copying it.");
+    return;
+  }
+
+  if (report.textContent.trim() === "No report generated yet.") {
+    alert("Generate a report before copying it.");
+    return;
+  }
+
+  const reportText = report.textContent;
+
+  try {
+    if (
+      navigator.clipboard &&
+      window.isSecureContext
+    ) {
+      await navigator.clipboard.writeText(reportText);
+    } else {
+      const temporaryTextArea =
+        document.createElement("textarea");
+
+      temporaryTextArea.value = reportText;
+      temporaryTextArea.style.position = "fixed";
+      temporaryTextArea.style.opacity = "0";
+
+      document.body.appendChild(temporaryTextArea);
+      temporaryTextArea.focus();
+      temporaryTextArea.select();
+
+      const copied = document.execCommand("copy");
+
+      document.body.removeChild(temporaryTextArea);
+
+      if (!copied) {
+        throw new Error("Copy command failed.");
+      }
+    }
+
+    alert("Integrity report copied to your clipboard.");
+  } catch (error) {
+    console.error("Could not copy integrity report:", error);
+
+    alert(
+      "The report could not be copied automatically. Select the report text and copy it manually."
+    );
+  }
+}
+// ==========================================
+// Part 4: Academic Integrity initialization
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", function () {
+  clearIntegrityReview();
+});

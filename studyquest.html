@@ -23,7 +23,7 @@ input,select,textarea{width:100%;background:#0d1627;color:var(--ink);border:1px 
 <div class="tabs">
 <button data-tab="dashboard" class="on">Dashboard</button><button data-tab="courses">Courses</button><button data-tab="chapters">Chapters</button>
 <button data-tab="resources">Videos & Resources</button><button data-tab="flashcards">Flashcards</button><button data-tab="practice">Practice</button>
-<button data-tab="simulator">Simulator</button><button data-tab="mistakes">Mistake Journal</button><button data-tab="tutor">Tutor</button>
+<button data-tab="simulator">Simulator</button><button data-tab="mistakes">Mistake Journal</button><button data-tab="tutor">Tutor</button><button data-tab="integrity">Academic Integrity</button>
 </div>
 
 <section id="dashboard" class="tabpage"><div class="grid">
@@ -49,4 +49,213 @@ input,select,textarea{width:100%;background:#0d1627;color:var(--ink);border:1px 
 
 <section id="tutor" class="tabpage hide"><div class="grid"><div class="card"><h2>Tutor Session</h2><select id="tutorMode"><option>Teach Me</option><option>Socratic Tutor</option><option>Quiz Coach</option><option>Case Supervisor</option><option>Exam Professor</option><option>Study Rescue</option></select><textarea id="tutorPrompt" placeholder="Ask about a concept, paste notes, or describe what is confusing"></textarea><button class="btn primary" onclick="localTutor()">Ask Tutor</button><div id="tutorReply" class="item">The hosted AI connection will plug into this panel. The prototype already provides structured local coaching prompts.</div></div>
 <div class="card"><h2>AI Connection Status</h2><p><span class="pill">Prototype mode</span></p><p class="muted">A secure hosted tutor requires a server endpoint and an API key stored outside the browser. Never paste an API key into this page. The interface and data model are ready for that connection.</p></div></div></section>
+<section id="integrity" class="tabpage hide">
+
+  <div class="hero">
+    <div class="kicker">Academic Integrity Studio</div>
+    <h1>Review your work before submission.</h1>
+    <p class="sub">
+      Examine writing patterns, citations, originality, and transparency.
+      Results are guidance, not proof of misconduct or authorship.
+    </p>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>Document Review</h2>
+
+      <label for="integrityTitle">Assignment title</label>
+      <input
+        id="integrityTitle"
+        type="text"
+        placeholder="Example: Cultural Psychology Reflection"
+      >
+
+      <label for="integrityCourse">Course</label>
+      <input
+        id="integrityCourse"
+        type="text"
+        placeholder="Example: Cultural Psychology"
+      >
+
+      <label for="integrityText">Paste your writing</label>
+      <textarea
+        id="integrityText"
+        rows="14"
+        placeholder="Paste an essay, discussion post, report, or other academic writing here."
+      ></textarea>
+
+      <div class="row">
+        <button class="btn primary" onclick="runIntegrityReview()">
+          Run Full Review
+        </button>
+
+        <button class="btn" onclick="clearIntegrityReview()">
+          Clear
+        </button>
+      </div>
+
+      <p class="muted">
+        Your text stays inside this browser prototype and is not uploaded by this page.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Integrity Snapshot</h2>
+
+      <div class="meter">
+        <i id="integrityScoreBar" style="width:0%"></i>
+      </div>
+
+      <h3 id="integrityScoreText">No review completed</h3>
+
+      <div id="integritySummary" class="list">
+        <div class="item">
+          Paste writing and run a review to generate a transparency snapshot.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="kicker">Writing Analysis</div>
+      <h2>Authorship Indicators</h2>
+
+      <p class="muted">
+        Reviews sentence variation, repetition, transitions, tone shifts,
+        and unusually uniform writing patterns.
+      </p>
+
+      <div id="writingAnalysisResult" class="item">
+        No writing analysis yet.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="kicker">Source Check</div>
+      <h2>Citation Checker</h2>
+
+      <p class="muted">
+        Looks for in-text citations, reference sections, quotations,
+        source attribution, and possible citation gaps.
+      </p>
+
+      <div id="citationResult" class="item">
+        No citation review yet.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="kicker">Originality Review</div>
+      <h2>Similarity Indicators</h2>
+
+      <p class="muted">
+        Flags repeated passages and wording patterns within the pasted document.
+        External database comparison will require a future secure service.
+      </p>
+
+      <div id="similarityResult" class="item">
+        No similarity review yet.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="kicker">Writing Quality</div>
+      <h2>Document Dashboard</h2>
+
+      <div id="writingMetrics" class="list">
+
+        <div class="item">
+          <strong>Word count:</strong>
+          <span id="integrityWordCount">0</span>
+        </div>
+
+        <div class="item">
+          <strong>Sentence count:</strong>
+          <span id="integritySentenceCount">0</span>
+        </div>
+
+        <div class="item">
+          <strong>Average sentence length:</strong>
+          <span id="integritySentenceAverage">0</span>
+        </div>
+
+        <div class="item">
+          <strong>Citation indicators:</strong>
+          <span id="integrityCitationCount">0</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="kicker">Transparency</div>
+      <h2>Writing Process Statement</h2>
+
+      <label for="integrityProcess">
+        Describe how you completed the assignment
+      </label>
+
+      <textarea
+        id="integrityProcess"
+        rows="8"
+        placeholder="Example: I outlined the paper, drafted each section, used course readings, and used AI only to brainstorm possible headings."
+      ></textarea>
+
+      <label for="integrityTools">
+        Tools or assistance used
+      </label>
+
+      <textarea
+        id="integrityTools"
+        rows="5"
+        placeholder="List tutors, writing centers, grammar tools, AI tools, collaborators, or other assistance."
+      ></textarea>
+    </div>
+
+    <div class="card">
+      <div class="kicker">Submission Record</div>
+      <h2>Professor Report</h2>
+
+      <p class="muted">
+        Create a readable report summarizing the document review,
+        writing process, and disclosed assistance.
+      </p>
+
+      <button class="btn blue" onclick="generateIntegrityReport()">
+        Generate Report
+      </button>
+
+      <button class="btn" onclick="copyIntegrityReport()">
+        Copy Report
+      </button>
+
+      <div id="integrityReport" class="item" style="margin-top:12px">
+        No report generated yet.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h2>Important Limitation</h2>
+
+    <p class="muted">
+      QuestOS cannot determine with certainty whether writing was created by
+      artificial intelligence or copied from another source. Automated indicators
+      can produce false positives and false negatives. Results should support
+      conversation, revision, and documentation rather than serve as automatic
+      evidence of academic misconduct.
+    </p>
+  </div>
+
+</section>
 </main><footer>StudyQuest · Your coursework, now with a training montage</footer><script src="studyquest.js"></script><script src="app.js"></script></body></html>
