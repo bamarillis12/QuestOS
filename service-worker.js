@@ -1,5 +1,5 @@
 
-const CACHE='questos-v1';
+const CACHE='questos-v2';
 const ASSETS=['./','./index.html','./studyquest.html','./coursequest.html','./neuroquest.html','./app.js','./studyquest.js','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
