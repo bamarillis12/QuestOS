@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08101c"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg">
+<title>StudyQuest</title><style>
+:root{--bg:#08101c;--panel:#131d30;--panel2:#1d2943;--ink:#eef4ff;--muted:#a8b6ce;--mint:#79d6c5;--gold:#e7c66d;--blue:#8fb9ff;--line:#34415e;--red:#ff9292}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#08101c,#101a2d);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+a{color:inherit}.top{position:sticky;top:0;z-index:20;background:rgba(8,16,28,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.brand{font-weight:950;letter-spacing:.04em}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a,.btn{border:0;border-radius:10px;padding:9px 12px;text-decoration:none;font-weight:850;cursor:pointer;background:var(--panel2);color:var(--ink)}
+.nav a.active,.btn.primary{background:var(--gold);color:#10131a}.btn.mint{background:var(--mint);color:#071018}.btn.blue{background:var(--blue);color:#071018}.btn.red{background:var(--red);color:#250808}
+main{max-width:1180px;margin:auto;padding:26px 18px 60px}.hero{padding:34px;border:1px solid var(--line);border-radius:24px;background:radial-gradient(circle at top right,rgba(231,198,109,.15),transparent 35%),var(--panel)}
+h1{font-size:clamp(2rem,6vw,4.6rem);margin:.1em 0}.sub{color:var(--muted);max-width:760px;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}.card h2,.card h3{margin-top:0}.kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.16em;color:var(--gold);font-weight:900}.meter{height:10px;background:#26344e;border-radius:99px;overflow:hidden}.meter i{display:block;height:100%;background:var(--mint)}.muted{color:var(--muted)}.pill{display:inline-block;padding:5px 8px;border-radius:999px;background:var(--panel2);font-size:.77rem;font-weight:900}
+input,select,textarea{width:100%;background:#0d1627;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;margin:5px 0 10px}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.hide{display:none}.list{display:grid;gap:10px}.item{padding:12px;border:1px solid var(--line);border-radius:12px;background:#0e1829}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}.tabs button{background:var(--panel2);color:var(--ink);border:0;border-radius:9px;padding:9px 11px;font-weight:850;cursor:pointer}.tabs button.on{background:var(--gold);color:#12151b}.flashcard{min-height:230px;display:grid;place-items:center;text-align:center;font-size:1.35rem;padding:28px;border-radius:20px;background:linear-gradient(145deg,#17243b,#263653);border:1px solid var(--line);cursor:pointer}.choice{display:block;width:100%;text-align:left;margin:8px 0;padding:12px;border:1px solid var(--line);background:#101a2c;color:var(--ink);border-radius:10px;cursor:pointer}.good{border-color:var(--mint)}.bad{border-color:var(--red)}footer{color:var(--muted);text-align:center;padding:30px}
+@media(max-width:600px){main{padding:15px 12px 40px}.hero{padding:22px}.top{padding:10px}}
+</style></head><body>
+<header class="top"><div class="brand">STUDYQUEST ✦ Learning Studio</div><nav class="nav">
+<a href="index.html">QuestOS</a><a href="coursequest.html">CourseQuest</a><a class="active" href="studyquest.html">StudyQuest</a><a href="neuroquest.html">NeuroQuest</a></nav></header>
+<main>
+<section class="hero"><div class="kicker">Adaptive study workspace</div><h1 id="greet">Build understanding, not tab clutter.</h1>
+<p class="sub">Create course hubs now, then attach syllabi, chapters, videos, cards, cases, and tutor material later. This first build is intentionally useful before your syllabi arrive.</p>
+<div class="grid"><div class="card"><h3>Current Course</h3><select id="courseSelect"></select><button class="btn primary" onclick="showTab('courses')">Manage Courses</button></div>
+<div class="card"><h3>Mastery</h3><div class="meter"><i id="masteryBar" style="width:0%"></i></div><p id="masteryText" class="muted">0% demonstrated</p></div>
+<div class="card"><h3>Recommended Next</h3><p id="recommendation">Add a course, chapter, or flashcard to begin.</p></div></div></section>
+
+<div class="tabs">
+<button data-tab="dashboard" class="on">Dashboard</button><button data-tab="courses">Courses</button><button data-tab="chapters">Chapters</button>
+<button data-tab="resources">Videos & Resources</button><button data-tab="flashcards">Flashcards</button><button data-tab="practice">Practice</button>
+<button data-tab="simulator">Simulator</button><button data-tab="mistakes">Mistake Journal</button><button data-tab="tutor">Tutor</button>
+</div>
+
+<section id="dashboard" class="tabpage"><div class="grid">
+<div class="card"><h2>Learning Path</h2><div id="pathList" class="list"></div></div>
+<div class="card"><h2>Study Snapshot</h2><div id="snapshot"></div></div>
+<div class="card"><h2>Quick Mission</h2><button class="btn primary" onclick="showTab('flashcards')">Review Flashcards</button> <button class="btn mint" onclick="showTab('simulator')">Run a Case</button></div>
+</div></section>
+
+<section id="courses" class="tabpage hide"><div class="card"><h2>Add Course</h2><div class="row"><input id="newCourse" placeholder="Course name"><input id="courseEmoji" placeholder="Icon, e.g. 🧠"></div><button class="btn primary" onclick="addCourse()">Add Course</button></div><div id="courseList" class="grid"></div></section>
+
+<section id="chapters" class="tabpage hide"><div class="card"><h2>Add Chapter or Unit</h2><div class="row"><input id="chapterTitle" placeholder="Chapter or unit title"><select id="chapterStatus"><option>Not started</option><option>Learning</option><option>Practicing</option><option>Needs review</option><option>Mastered</option></select></div><textarea id="chapterObjectives" placeholder="Learning objectives or notes"></textarea><button class="btn primary" onclick="addChapter()">Add Chapter</button></div><div id="chapterList" class="list"></div></section>
+
+<section id="resources" class="tabpage hide"><div class="card"><h2>Add Video or Resource</h2><div class="row"><input id="resTitle" placeholder="Resource title"><input id="resUrl" placeholder="https://..."><select id="resType"><option>Start Here</option><option>Textbook Companion</option><option>Another Explanation</option><option>Go Deeper</option><option>Exam Rescue</option></select></div><textarea id="resNotes" placeholder="Why this resource is useful"></textarea><button class="btn primary" onclick="addResource()">Add Resource</button></div><div id="resourceList" class="list"></div></section>
+
+<section id="flashcards" class="tabpage hide"><div class="grid"><div class="card"><h2>Create Card</h2><textarea id="cardFront" placeholder="Question or term"></textarea><textarea id="cardBack" placeholder="Answer or explanation"></textarea><input id="cardTag" placeholder="Chapter or tag"><button class="btn primary" onclick="addCard()">Add Card</button></div>
+<div class="card"><h2>Study Deck</h2><div id="flashcard" class="flashcard" onclick="flipCard()">Add cards to begin.</div><p class="muted" id="cardMeta"></p><button class="btn" onclick="prevCard()">Previous</button> <button class="btn primary" onclick="nextCard()">Next</button> <button class="btn mint" onclick="rateCard(true)">I knew it</button> <button class="btn red" onclick="rateCard(false)">Needs review</button></div></div><div id="cardList" class="list"></div></section>
+
+<section id="practice" class="tabpage hide"><div class="grid"><div class="card"><h2>Create Practice Question</h2><textarea id="qPrompt" placeholder="Question"></textarea><input id="qAnswer" placeholder="Correct answer"><textarea id="qExplain" placeholder="Explanation"></textarea><button class="btn primary" onclick="addQuestion()">Add Question</button></div><div class="card"><h2>Practice Arena</h2><div id="practiceBox"></div></div></div></section>
+
+<section id="simulator" class="tabpage hide"><div class="card"><div class="kicker">Case Simulator</div><h2 id="caseTitle">Abnormal Psychology Demo Case</h2><p id="caseText">A 20-year-old student reports sleeping four hours nightly, rapid speech, unusually high confidence, and impulsive spending.</p><div id="caseOptions"></div><div id="caseFeedback" class="item hide"></div><button class="btn primary" onclick="resetCase()">Restart Case</button></div></section>
+
+<section id="mistakes" class="tabpage hide"><div class="card"><h2>Mistake Journal</h2><p class="muted">Incorrect practice answers and difficult flashcards collect here automatically.</p><div id="mistakeList" class="list"></div></div></section>
+
+<section id="tutor" class="tabpage hide"><div class="grid"><div class="card"><h2>Tutor Session</h2><select id="tutorMode"><option>Teach Me</option><option>Socratic Tutor</option><option>Quiz Coach</option><option>Case Supervisor</option><option>Exam Professor</option><option>Study Rescue</option></select><textarea id="tutorPrompt" placeholder="Ask about a concept, paste notes, or describe what is confusing"></textarea><button class="btn primary" onclick="localTutor()">Ask Tutor</button><div id="tutorReply" class="item">The hosted AI connection will plug into this panel. The prototype already provides structured local coaching prompts.</div></div>
+<div class="card"><h2>AI Connection Status</h2><p><span class="pill">Prototype mode</span></p><p class="muted">A secure hosted tutor requires a server endpoint and an API key stored outside the browser. Never paste an API key into this page. The interface and data model are ready for that connection.</p></div></div></section>
+</main><footer>StudyQuest · Your coursework, now with a training montage</footer><script src="studyquest.js"></script><script src="app.js"></script></body></html>

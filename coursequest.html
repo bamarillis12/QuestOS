@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CourseQuest Academic Command Center</title>
+<style>
+:root{
+--bg:#08101c;--panel:#131d30;--panel2:#1d2943;--ink:#edf4ff;--muted:#a9b8d1;
+--mint:#79d6c5;--gold:#e7c66d;--line:#34415e;--red:#ef9a9a;--blue:#8fb9ff;
+--homework:#72c7ff;--quiz:#c59cff;--exam:#ff8f8f;--reading:#75d6a7;
+--paper:#f4bf62;--presentation:#ff9dd1;--lab:#74dbe6;--discussion:#b7d37a;--other:#aab5c8
+}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#070e19,#111a2c);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit}header{position:sticky;top:0;z-index:30;background:rgba(7,13,24,.96);border-bottom:1px solid var(--line)}
+.top{max-width:1500px;margin:auto;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{font-weight:950;letter-spacing:.08em}.status{color:var(--muted);display:flex;gap:9px;flex-wrap:wrap}
+.shell{max-width:1500px;margin:auto;padding:18px;display:grid;grid-template-columns:265px 1fr;gap:18px}.side{position:sticky;top:75px;height:calc(100vh - 92px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:13px}
+.navtitle{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:900;margin:14px 8px 6px}.navbtn{display:flex;width:100%;gap:9px;align-items:center;text-align:left;background:transparent;color:var(--muted);border:1px solid transparent;border-radius:10px;padding:10px;cursor:pointer;margin:3px 0}.navbtn:hover,.navbtn.active{background:var(--panel2);color:var(--mint);border-color:var(--line)}
+main{min-width:0}.page{display:none}.page.active{display:block}.hero,.card{background:rgba(19,29,48,.97);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 14px 35px rgba(0,0,0,.2)}.hero{margin-bottom:16px}
+h1{font-size:clamp(2rem,5vw,4.5rem);line-height:1;margin:.1rem 0 .6rem}h2{margin-top:0}.kicker{text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-size:.8rem;font-weight:900}.sub{color:var(--muted);line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.grid.two{grid-template-columns:repeat(2,1fr)}.stat{font-size:2rem;font-weight:950;color:var(--mint)}
+.btn{background:var(--mint);color:#07110f;border:0;border-radius:10px;font-weight:900;padding:10px 13px;cursor:pointer;margin:4px 5px 4px 0}.btn.alt{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}.btn.gold{background:var(--gold)}.btn.red{background:var(--red);color:#2b0909}.dangerText{color:var(--red)}
+label{display:block;font-weight:800;margin:11px 0 6px}input,select,textarea{width:100%;background:#0b1322;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}textarea{min-height:95px;resize:vertical}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}.pill{display:inline-block;padding:5px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);font-size:.8rem;color:var(--muted)}
+.item{background:#0e1727;border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}.itemhead{display:flex;justify-content:space-between;gap:10px}.meta{font-size:.86rem;color:var(--muted)}.empty{border:1px dashed var(--line);border-radius:12px;padding:24px;text-align:center;color:var(--muted)}
+.timer{text-align:center;padding:25px}.clock{font-size:clamp(4rem,12vw,8rem);font-weight:950;letter-spacing:-.06em}.timerModes{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}.timerModes button.active{background:var(--gold)}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.dayname,.day{border:1px solid var(--line);border-radius:9px;padding:7px;min-height:88px;background:#0d1626}.dayname{min-height:auto;text-align:center;font-weight:900;color:var(--muted)}.day.other{opacity:.35}.num{font-weight:900}.dot{font-size:.72rem;padding:3px 5px;border-radius:6px;margin-top:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#071018;font-weight:800}
+.dot.homework,.type-homework{background:var(--homework)}
+.dot.quiz,.type-quiz{background:var(--quiz)}
+.dot.exam,.type-exam{background:var(--exam)}
+.dot.reading,.type-reading{background:var(--reading)}
+.dot.paper,.type-paper{background:var(--paper)}
+.dot.presentation,.type-presentation{background:var(--presentation)}
+.dot.lab,.type-lab{background:var(--lab)}
+.dot.discussion,.type-discussion{background:var(--discussion)}
+.dot.other,.type-other{background:var(--other)}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.legend span{padding:6px 9px;border-radius:999px;color:#071018;font-size:.78rem;font-weight:900}
+.notice{padding:13px;border-left:4px solid var(--mint);background:#0d1727;border-radius:9px;color:var(--muted)}.courseCard{border-top:4px solid var(--blue)}.progress{height:12px;background:#070d17;border:1px solid var(--line);border-radius:999px;overflow:hidden}.progress div{height:100%;background:linear-gradient(90deg,var(--mint),var(--gold))}
+.weekrow{display:grid;grid-template-columns:120px 1fr;gap:12px;border-bottom:1px solid var(--line);padding:10px 0}.briefing{background:white;color:#111;padding:28px;border-radius:8px}.briefing h2,.briefing h3{color:#111}.briefing .meta{color:#555}
+@media(max-width:1000px){.shell{grid-template-columns:1fr}.side{position:static;height:auto}.grid,.grid.two{grid-template-columns:1fr}.calendar{grid-template-columns:repeat(2,1fr)}.dayname{display:none}}
+@media print{header,.side,.noPrint{display:none!important}.shell{display:block;padding:0}.page{display:none!important}#briefing.page{display:block!important}.briefing{padding:0}.card,.hero{box-shadow:none;border:0}}
+</style>
+</head>
+<body>
+<div style="position:sticky;top:0;z-index:9999;background:#070d18;border-bottom:1px solid #33415f;padding:9px 14px;display:flex;gap:8px;flex-wrap:wrap;font-family:system-ui">
+<a href="index.html" style="color:#fff;text-decoration:none;background:#263653;padding:7px 10px;border-radius:9px">QuestOS</a>
+<a href="coursequest.html" style="color:#071018;text-decoration:none;background:#79d6c5;padding:7px 10px;border-radius:9px;font-weight:800">CourseQuest</a>
+<a href="studyquest.html" style="color:#071018;text-decoration:none;background:#e7c66d;padding:7px 10px;border-radius:9px;font-weight:800">StudyQuest</a>
+<a href="neuroquest.html" style="color:#071018;text-decoration:none;background:#8fb9ff;padding:7px 10px;border-radius:9px;font-weight:800">NeuroQuest</a>
+</div>
+
+<header><div class="top"><div class="brand">COURSEQUEST ACADEMIC COMMAND CENTER 🎓</div><div class="status"><span id="todayLabel"></span><span>·</span><span><b id="assignmentCount">0</b> assignments</span></div></div></header>
+<div class="shell">
+<aside class="side">
+<div class="navtitle">Command Center</div>
+<button class="navbtn active" data-page="dashboard">🏛️ Dashboard</button>
+<button class="navbtn" data-page="timer">⏱️ Study Session</button>
+<button class="navbtn" data-page="calendar">🗓️ Master Calendar</button>
+<button class="navbtn" data-page="weekly">📌 Weekly Board</button>
+<button class="navbtn" data-page="grades">🧮 Grade Calculator</button>
+<button class="navbtn" data-page="exams">🧠 Exam Headquarters</button>
+<button class="navbtn" data-page="readings">📚 Reading Tracker</button>
+<button class="navbtn" data-page="briefing">🖨️ Weekly Briefing</button>
+<div class="navtitle">Courses</div><div id="courseNav"></div>
+<div class="navtitle">Data & Syllabi</div>
+<button class="navbtn" data-page="syllabus">📥 Syllabus Import</button>
+<button class="navbtn" onclick="exportAll()">💾 Backup CourseQuest</button>
+<button class="navbtn" onclick="document.getElementById('restoreFile').click()">♻️ Restore Backup</button>
+<input id="restoreFile" type="file" accept=".json" hidden onchange="restoreAll(event)">
+</aside>
+<main>
+
+<section id="dashboard" class="page active">
+<div class="hero"><div class="kicker">Semester Overview</div><h1>Your week, under command.</h1><p class="sub">CourseQuest combines a calm study room, assignment control tower, grade lab, exam planning station, and printable weekly operations brief.</p></div>
+<div class="grid"><div class="card"><div class="stat" id="dueThisWeek">0</div><p>Due this week</p></div><div class="card"><div class="stat" id="upcomingExams">0</div><p>Upcoming exams</p></div><div class="card"><div class="stat" id="readingProgress">0%</div><p>Reading completion</p></div></div>
+<div class="card" style="margin-top:16px"><h2>Current Courses</h2><div id="dashboardCourses" class="grid"></div></div>
+<div class="card" style="margin-top:16px"><p class="notice"><b>Public-syllabus mode:</b> Course descriptions and provisional assignment types are based on public Westminster materials. Current deadlines and exact grading policies are intentionally blank until you enter or import your real syllabi.</p></div>
+</section>
+
+<section id="timer" class="page">
+<div class="hero"><div class="kicker">Quiet Focus Room</div><h1>Study Session</h1><p class="sub">Choose a focus rhythm, name the mission, and let the screen become pleasantly boring in the useful way.</p></div>
+<div class="card timer">
+<label style="max-width:560px;margin:0 auto 12px;text-align:left">Session mission<input id="sessionMission" placeholder="Read Chapter 3, outline paper, review conditioning..."></label>
+<label style="max-width:560px;margin:0 auto 18px;text-align:left">Course<select id="timerCourse"></select></label>
+<div class="timerModes"><button class="btn alt active" onclick="setMode(25,5,this)">25 / 5</button><button class="btn alt" onclick="setMode(50,10,this)">50 / 10</button><button class="btn alt" onclick="setMode(90,20,this)">90 / 20</button><button class="btn alt" onclick="setCustom()">Custom</button></div>
+<div class="clock" id="clock">25:00</div><div class="kicker" id="phaseLabel">Focus</div>
+<button class="btn" id="startBtn" onclick="toggleTimer()">Start</button><button class="btn alt" onclick="resetTimer()">Reset</button><button class="btn gold" onclick="completeSession()">Log Completed Session</button>
+<p class="sub" id="sessionLogLabel">0 focused minutes logged.</p>
+</div>
+</section>
+
+<section id="calendar" class="page">
+<div class="hero"><div class="kicker">All Courses</div><h1>Master Assignment Calendar</h1><div class="noPrint"><button class="btn alt" onclick="changeMonth(-1)">← Previous</button><button class="btn alt" onclick="goToday()">Today</button><button class="btn alt" onclick="changeMonth(1)">Next →</button></div><h2 id="monthLabel"></h2></div>
+<div class="card">
+<div class="legend">
+<span class="type-homework">Homework</span>
+<span class="type-quiz">Quiz</span>
+<span class="type-exam">Exam</span>
+<span class="type-reading">Reading</span>
+<span class="type-paper">Paper</span>
+<span class="type-presentation">Presentation</span>
+<span class="type-lab">Lab</span>
+<span class="type-discussion">Discussion</span>
+</div>
+<div id="calendarGrid" class="calendar" style="margin-top:12px"></div>
+</div>
+</section>
+
+<section id="weekly" class="page">
+<div class="hero"><div class="kicker">Seven-Day View</div><h1>Weekly Assignment Board</h1><p class="sub" id="weekRange"></p></div>
+<div class="card noPrint"><h2>Add Assignment</h2><div class="grid two"><label>Course<select id="aCourse"></select></label><label>Assignment<input id="aTitle"></label><label>Due date<input id="aDate" type="date"></label><label>Type<select id="aType"><option>Homework</option><option>Reading</option><option>Quiz</option><option>Exam</option><option>Paper</option><option>Presentation</option><option>Lab</option><option>Discussion</option><option>Project</option><option>Assignment</option></select></label><label>Points possible<input id="aPoints" type="number" min="0"></label><label>Status<select id="aStatus"><option>Not started</option><option>In progress</option><option>Ready to submit</option><option>Submitted</option><option>Graded</option></select></label></div><label>Notes<textarea id="aNotes"></textarea></label><button class="btn" onclick="addAssignment()">Add to Board</button>
+<button class="btn red" onclick="deleteCompletedAssignments()">Delete Submitted / Graded</button>
+</div>
+<div class="card" style="margin-top:16px"><div id="weeklyList"></div></div>
+</section>
+
+<section id="grades" class="page">
+<div class="hero"><div class="kicker">Forecast Lab</div><h1>Grade Calculator</h1><p class="sub">Enter weighted categories or individual grade items. CourseQuest calculates only from the data you provide.</p></div>
+<div class="card noPrint"><h2>Add Grade Category</h2><div class="grid"><label>Course<select id="gCourse"></select></label><label>Category<input id="gCategory" placeholder="Exams, papers, participation..."></label><label>Weight %<input id="gWeight" type="number" min="0" max="100"></label><label>Current earned points<input id="gEarned" type="number" min="0"></label><label>Current possible points<input id="gPossible" type="number" min="0"></label><label>Target category score %<input id="gTarget" type="number" min="0" max="100" value="90"></label></div><button class="btn" onclick="addGradeCategory()">Add Category</button></div>
+<div id="gradeResults" class="grid" style="margin-top:16px"></div>
+</section>
+
+<section id="exams" class="page">
+<div class="hero"><div class="kicker">Assessment Planning</div><h1>Exam Headquarters</h1><p class="sub">Turn each exam into a campaign with topics, confidence ratings, study sessions, and practice-test evidence.</p></div>
+<div class="card noPrint"><h2>Register Exam</h2><div class="grid two"><label>Course<select id="eCourse"></select></label><label>Exam name<input id="eTitle"></label><label>Date<input id="eDate" type="date"></label><label>Confidence<select id="eConfidence"><option>1 - Fog bank</option><option>2 - Shaky</option><option>3 - Developing</option><option>4 - Strong</option><option>5 - Ready</option></select></label></div><label>Topics<textarea id="eTopics" placeholder="Separate topics with commas"></textarea></label><label>Study plan<textarea id="ePlan"></textarea></label><button class="btn" onclick="addExam()">Register Exam</button></div>
+<div id="examList" class="grid two" style="margin-top:16px"></div>
+</section>
+
+<section id="readings" class="page">
+<div class="hero"><div class="kicker">Literature Pipeline</div><h1>Reading Tracker</h1><p class="sub">Track chapters, papers, textbook sections, and discussion readings with notes and completion status.</p></div>
+<div class="card noPrint"><div class="grid two"><label>Course<select id="rCourse"></select></label><label>Reading title<input id="rTitle"></label><label>Author or source<input id="rSource"></label><label>Due date<input id="rDate" type="date"></label><label>Status<select id="rStatus"><option>Queued</option><option>Skimming</option><option>Deep reading</option><option>Notes complete</option><option>Finished</option></select></label><label>Pages or link<input id="rPages"></label></div><label>Main takeaway<textarea id="rNotes"></textarea></label><button class="btn" onclick="addReading()">Add Reading</button></div>
+<div id="readingList" style="margin-top:16px"></div>
+</section>
+
+<section id="briefing" class="page">
+<div class="hero noPrint"><div class="kicker">Printable Operations Sheet</div><h1>Weekly Briefing</h1><button class="btn" onclick="window.print()">Print Briefing</button></div>
+<div id="briefingBody" class="briefing"></div>
+</section>
+
+<section id="syllabus" class="page">
+<div class="hero"><div class="kicker">Import & Update</div><h1>Syllabus Intake</h1><p class="sub">Paste syllabus text for automatic draft extraction, or import a CourseQuest JSON backup. Extracted items remain editable because syllabus formatting is wonderfully chaotic. Each detected item is entered once and automatically routed to every relevant CourseQuest section.</p></div>
+<div class="grid two">
+<div class="card"><h2>Paste Syllabus Text</h2><label>Course<select id="sCourse"></select></label><label>Syllabus text<textarea id="syllabusText" style="min-height:300px" placeholder="Paste the schedule, grade breakdown, readings, and assignment sections here..."></textarea></label><button class="btn" onclick="parseSyllabus()">Import and Route Everything</button><div id="parseReport" class="item" style="display:none"></div></div>
+<div class="card"><h2>Import Options</h2><p class="notice">Best-supported formats: pasted text and CourseQuest JSON backups. Browser-only PDF extraction is not dependable without an internet library, so PDF text should be copied and pasted here.</p><button class="btn alt" onclick="document.getElementById('textFile').click()">Import TXT / CSV</button><input id="textFile" type="file" accept=".txt,.csv" hidden onchange="importTextFile(event)">
+<h2 style="margin-top:24px">Public-Syllabus Starter</h2><p class="sub">Abnormal Psychology is initialized with provisional assignment categories reported in a public Westminster syllabus: exams, a research paper, discussion reviews, and an application presentation. Exact weights and dates are left blank for verification.</p></div>
+</div>
+</section>
+
+<section id="course" class="page">
+<div class="hero"><div class="kicker">Course File</div><h1 id="courseTitle"></h1><p class="sub" id="courseDesc"></p></div>
+<div class="grid"><div class="card"><div class="stat" id="courseDue">0</div><p>Open assignments</p></div><div class="card"><div class="stat" id="courseReadings">0</div><p>Readings tracked</p></div><div class="card"><div class="stat" id="courseGrade">—</div><p>Calculated grade</p></div></div>
+<div class="card" style="margin-top:16px">
+<div class="itemhead"><h2>Course Workstream</h2>
+<div class="noPrint">
+<button class="btn red" onclick="deleteAllCourseItems()">Delete All Course Items</button>
+</div></div>
+<div id="courseItems"></div>
+</div>
+</section>
+
+</main></div>
+<script>
+const courses=[
+{id:'ell',name:'English Language Learners',icon:'🗣️',desc:'Language acquisition, learner profiles, instructional supports, classroom practice, culture, and assessment.'},
+{id:'learning',name:'Principles of Learning',icon:'🐀',desc:'Conditioning, reinforcement, behavior analysis, laboratory work, experimental reasoning, and learning theory.'},
+{id:'cultural',name:'Cultural Psychology',icon:'🌍',desc:'Culture and psychological processes, cross-cultural research, measurement, identity, bias, and application.'},
+{id:'honors',name:'HON 202C',icon:'🏛️',desc:'Interdisciplinary readings, seminar preparation, synthesis, discussion, projects, and reflection.'},
+{id:'abnormal',name:'Abnormal Psychology',icon:'🧠',desc:'Theory and evidence concerning psychopathology, diagnosis, treatment, research, and philosophical questions.'}
+];
+let data;
+try{data=JSON.parse(localStorage.getItem('courseQuestData'))||null}catch(e){}
+if(!data)data={assignments:[],grades:[],exams:[],readings:[],sessions:[],syllabusNotes:{},version:1};
+let currentCourse=null,currentMonth=new Date();let timer={focus:25,break:5,remaining:1500,phase:'Focus',running:false,interval:null};
+const $=id=>document.getElementById(id);function save(){localStorage.setItem('courseQuestData',JSON.stringify(data))}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function cname(id){return courses.find(c=>c.id===id)?.name||id}
+function normalizeType(raw){
+  const s=String(raw||'').toLowerCase();
+  if(/midterm|final|exam|test/.test(s)) return 'Exam';
+  if(/quiz/.test(s)) return 'Quiz';
+  if(/read|chapter|article/.test(s)) return 'Reading';
+  if(/paper|essay|manuscript/.test(s)) return 'Paper';
+  if(/presentation|speech|poster/.test(s)) return 'Presentation';
+  if(/lab|experiment/.test(s)) return 'Lab';
+  if(/discussion|review|response|reflection/.test(s)) return 'Discussion';
+  if(/homework|problem set|worksheet/.test(s)) return 'Homework';
+  if(/project/.test(s)) return 'Project';
+  return 'Assignment';
+}
+function typeClass(raw){
+  const t=normalizeType(raw).toLowerCase();
+  return ['homework','quiz','exam','reading','paper','presentation','lab','discussion'].includes(t)?t:'other';
+}
+function buildSelects(){['timerCourse','aCourse','gCourse','eCourse','rCourse','sCourse'].forEach(id=>$(id).innerHTML=courses.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join(''))}
+function buildCourseNav(){$('courseNav').innerHTML=courses.map(c=>`<button class="navbtn" onclick="openCourse('${c.id}')">${c.icon} ${c.name}</button>`).join('')}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));currentCourse=null;renderAll();window.scrollTo(0,0)}
+function openCourse(id){currentCourse=id;showPage('course');currentCourse=id;renderCourse()}
+function parseDate(s){return s?new Date(s+'T12:00:00'):null}
+function startOfWeek(d=new Date()){const x=new Date(d);const day=x.getDay();x.setDate(x.getDate()-day);x.setHours(0,0,0,0);return x}
+function endOfWeek(d=new Date()){const x=startOfWeek(d);x.setDate(x.getDate()+6);x.setHours(23,59,59,999);return x}
+function isThisWeek(s){const d=parseDate(s);return d&&d>=startOfWeek()&&d<=endOfWeek()}
+function renderDashboard(){const week=data.assignments.filter(a=>isThisWeek(a.date)&&!['Submitted','Graded'].includes(a.status)).length;$('dueThisWeek').textContent=week;$('upcomingExams').textContent=data.exams.filter(e=>parseDate(e.date)>=new Date()).length;const done=data.readings.filter(r=>r.status==='Finished').length;$('readingProgress').textContent=data.readings.length?Math.round(done/data.readings.length*100)+'%':'0%';$('assignmentCount').textContent=data.assignments.length;
+$('dashboardCourses').innerHTML=courses.map(c=>{const open=data.assignments.filter(a=>a.course===c.id&&!['Submitted','Graded'].includes(a.status)).length;return `<div class="card courseCard"><div class="kicker">${c.icon} Course File</div><h3>${c.name}</h3><p class="sub">${open} open assignments</p><button class="btn alt" onclick="openCourse('${c.id}')">Open Course</button></div>`}).join('')}
+function setMode(f,b,el){timer.focus=f;timer.break=b;timer.phase='Focus';timer.remaining=f*60;document.querySelectorAll('.timerModes button').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');updateClock()}
+function setCustom(){const f=Number(prompt('Focus minutes:',40));const b=Number(prompt('Break minutes:',10));if(f>0&&b>=0)setMode(f,b)}
+function updateClock(){const m=Math.floor(timer.remaining/60),s=timer.remaining%60;$('clock').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('phaseLabel').textContent=timer.phase}
+function toggleTimer(){timer.running=!timer.running;$('startBtn').textContent=timer.running?'Pause':'Start';if(timer.running){timer.interval=setInterval(()=>{timer.remaining--;if(timer.remaining<=0){timer.running=false;clearInterval(timer.interval);alert(timer.phase+' complete.');timer.phase=timer.phase==='Focus'?'Break':'Focus';timer.remaining=(timer.phase==='Focus'?timer.focus:timer.break)*60;$('startBtn').textContent='Start'}updateClock()},1000)}else clearInterval(timer.interval)}
+function resetTimer(){clearInterval(timer.interval);timer.running=false;timer.phase='Focus';timer.remaining=timer.focus*60;$('startBtn').textContent='Start';updateClock()}
+function completeSession(){data.sessions.push({date:new Date().toISOString(),course:$('timerCourse').value,minutes:timer.focus,mission:$('sessionMission').value});save();$('sessionMission').value='';renderTimerLog();alert('Study session logged.')}
+function renderTimerLog(){const mins=data.sessions.reduce((n,s)=>n+Number(s.minutes||0),0);$('sessionLogLabel').textContent=mins+' focused minutes logged.'}
+function addAssignment(){const title=$('aTitle').value.trim(),date=$('aDate').value;if(!title){alert('Enter an assignment title.');return}data.assignments.push({id:Date.now(),course:$('aCourse').value,title,date,type:$('aType').value,points:Number($('aPoints').value||0),status:$('aStatus').value,notes:$('aNotes').value});save();['aTitle','aDate','aPoints','aNotes'].forEach(x=>$(x).value='');renderAll()}
+function updateAssignment(id,field,val){const a=data.assignments.find(x=>x.id===id);if(a){a[field]=val;save();renderAll()}}
+function deleteCompletedAssignments(){
+  const count=data.assignments.filter(a=>['Submitted','Graded'].includes(a.status)).length;
+  if(!count){alert('There are no submitted or graded assignments to delete.');return}
+  if(!confirm(`Delete ${count} submitted or graded assignment${count===1?'':'s'} from all CourseQuest views?`))return;
+  data.assignments=data.assignments.filter(a=>!['Submitted','Graded'].includes(a.status));
+  save();renderAll();
+}
+function removeItem(kind,id){
+  if(!confirm('Delete this item? This removes it from every CourseQuest view where it appears.'))return;
+  data[kind]=data[kind].filter(x=>x.id!==id);
+  save();renderAll();
+}
+function removeAssignmentFromAnyView(id){
+  if(!confirm('Delete this coursework item? It will disappear from the calendar, weekly board, course page, and any routed exam or reading view.'))return;
+  data.assignments=data.assignments.filter(x=>x.id!==id);
+  save();renderAll();
+}
+function renderWeekly(){const s=startOfWeek(),e=endOfWeek();$('weekRange').textContent=s.toLocaleDateString()+' – '+e.toLocaleDateString();const days=[0,1,2,3,4,5,6].map(i=>{const d=new Date(s);d.setDate(d.getDate()+i);const key=d.toISOString().slice(0,10);const items=data.assignments.filter(a=>a.date===key);return `<div class="weekrow"><div><b>${d.toLocaleDateString(undefined,{weekday:'long'})}</b><div class="meta">${d.toLocaleDateString()}</div></div><div>${items.length?items.map(a=>assignmentHTML(a)).join(''):'<span class="meta">No assignments due.</span>'}</div></div>`}).join('');$('weeklyList').innerHTML=days}
+function assignmentHTML(a){return `<div class="item"><div class="itemhead"><div><b>${esc(a.title)}</b><div class="meta"><span class="pill type-${typeClass(a.type)}" style="color:#071018">${esc(normalizeType(a.type))}</span> ${esc(cname(a.course))}${a.points?' · '+a.points+' pts':''}</div></div><button class="btn red noPrint" onclick="removeItem('assignments',${a.id})">Delete</button></div><p>${esc(a.notes)}</p><select class="noPrint" onchange="updateAssignment(${a.id},'status',this.value)">${['Not started','In progress','Ready to submit','Submitted','Graded'].map(s=>`<option ${s===a.status?'selected':''}>${s}</option>`).join('')}</select></div>`}
+function changeMonth(n){currentMonth.setMonth(currentMonth.getMonth()+n);renderCalendar()}function goToday(){currentMonth=new Date();renderCalendar()}
+function renderCalendar(){const y=currentMonth.getFullYear(),m=currentMonth.getMonth();$('monthLabel').textContent=currentMonth.toLocaleDateString(undefined,{month:'long',year:'numeric'});const first=new Date(y,m,1),start=new Date(y,m,1-first.getDay());let html=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(x=>`<div class="dayname">${x}</div>`).join('');for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=d.toISOString().slice(0,10);const items=data.assignments.filter(a=>a.date===key);html+=`<div class="day ${d.getMonth()!==m?'other':''}"><div class="num">${d.getDate()}</div>${items.slice(0,4).map(a=>`<div class="dot ${typeClass(a.type)}">${esc(a.title)}</div>`).join('')}${items.length>4?`<div class="meta">+${items.length-4} more</div>`:''}</div>`}$('calendarGrid').innerHTML=html}
+function addGradeCategory(){const cat=$('gCategory').value.trim();if(!cat)return;data.grades.push({id:Date.now(),course:$('gCourse').value,category:cat,weight:Number($('gWeight').value||0),earned:Number($('gEarned').value||0),possible:Number($('gPossible').value||0),target:Number($('gTarget').value||0)});save();['gCategory','gWeight','gEarned','gPossible'].forEach(x=>$(x).value='');renderGrades()}
+function courseGrade(id){const gs=data.grades.filter(g=>g.course===id),weighted=gs.filter(g=>g.weight>0&&g.possible>0);if(!weighted.length)return null;const w=weighted.reduce((n,g)=>n+g.weight,0);return weighted.reduce((n,g)=>n+(g.earned/g.possible*100)*g.weight,0)/w}
+function renderGrades(){$('gradeResults').innerHTML=courses.map(c=>{const gs=data.grades.filter(g=>g.course===c.id),score=courseGrade(c.id);return `<div class="card"><div class="kicker">${c.icon} ${c.name}</div><div class="stat">${score===null?'—':score.toFixed(1)+'%'}</div><p class="sub">${gs.reduce((n,g)=>n+g.weight,0)}% of course weight entered</p>${gs.map(g=>`<div class="item"><b>${esc(g.category)}</b><div class="meta">${g.weight}% weight · ${g.possible?((g.earned/g.possible)*100).toFixed(1):'—'}% current</div><button class="btn red noPrint" onclick="removeItem('grades',${g.id})">Delete Category</button></div>`).join('')}</div>`}).join('')}
+function addExam(){if(!$('eTitle').value.trim())return;data.exams.push({id:Date.now(),course:$('eCourse').value,title:$('eTitle').value,date:$('eDate').value,confidence:$('eConfidence').value,topics:$('eTopics').value,plan:$('ePlan').value});save();['eTitle','eDate','eTopics','ePlan'].forEach(x=>$(x).value='');renderExams()}
+function renderExams(){
+  const auto=data.assignments
+    .filter(a=>['Exam','Quiz'].includes(normalizeType(a.type)))
+    .map(a=>({id:'a'+a.id,assignmentId:a.id,course:a.course,title:a.title,date:a.date,
+      confidence:'Not rated',topics:a.notes||'',plan:'Imported automatically from the assignment system.',auto:true,type:normalizeType(a.type)}));
+  const manual=data.exams.map(e=>({...e,auto:false,type:'Exam'}));
+  const merged=[...auto,...manual].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
+  $('examList').innerHTML=merged.length?merged.map(e=>`<div class="card">
+    <div class="kicker">${esc(cname(e.course))}</div>
+    <h2><span class="pill type-${typeClass(e.type)}" style="color:#071018">${esc(e.type)}</span> ${esc(e.title)}</h2>
+    <p><b>Date:</b> ${esc(e.date||'Not set')}</p>
+    <p><b>Confidence:</b> ${esc(e.confidence)}</p>
+    <p><b>Topics:</b> ${esc(e.topics)}</p>
+    <p class="sub">${esc(e.plan)}</p>
+    ${e.auto?`<p class="meta">Automatically routed from the assignment board.</p><button class="btn red noPrint" onclick="removeAssignmentFromAnyView(${e.assignmentId})">Delete Coursework</button>`:`<button class="btn red noPrint" onclick="removeItem('exams',${e.id})">Delete Exam</button>`}
+  </div>`).join(''):'<div class="empty">No exams or quizzes detected.</div>'
+}
+function addReading(){if(!$('rTitle').value.trim())return;data.readings.push({id:Date.now(),course:$('rCourse').value,title:$('rTitle').value,source:$('rSource').value,date:$('rDate').value,status:$('rStatus').value,pages:$('rPages').value,notes:$('rNotes').value});save();['rTitle','rSource','rDate','rPages','rNotes'].forEach(x=>$(x).value='');renderReadings()}
+function renderReadings(){
+  const auto=data.assignments
+    .filter(a=>normalizeType(a.type)==='Reading')
+    .map(a=>({id:'a'+a.id,assignmentId:a.id,course:a.course,title:a.title,source:'Syllabus / assignment import',
+      date:a.date,status:a.status==='Graded'||a.status==='Submitted'?'Finished':a.status==='In progress'?'Deep reading':'Queued',
+      pages:'',notes:a.notes||'',auto:true}));
+  const manual=data.readings.map(r=>({...r,auto:false}));
+  const merged=[...auto,...manual].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
+  $('readingList').innerHTML=merged.length?merged.map(r=>`<div class="item">
+    <div class="itemhead"><div><b><span class="pill type-reading" style="color:#071018">Reading</span> ${esc(r.title)}</b>
+    <div class="meta">${esc(cname(r.course))} · ${esc(r.source)} · Due ${esc(r.date||'not set')}</div></div>
+    ${r.auto?'':`<button class="btn alt noPrint" onclick="removeItem('readings',${r.id})">Remove</button>`}</div>
+    <p>${esc(r.pages)}</p><p>${esc(r.notes)}</p>
+    ${r.auto?'<p class="meta">Automatically routed from the assignment board.</p>':`<select class="noPrint" onchange="updateReading(${r.id},this.value)">${['Queued','Skimming','Deep reading','Notes complete','Finished'].map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}</select>`}
+  </div>`).join(''):'<div class="empty">No readings detected.</div>'
+}
+function updateReading(id,status){const r=data.readings.find(x=>x.id===id);if(r){r.status=status;save();renderAll()}}
+function renderBriefing(){const s=startOfWeek(),e=endOfWeek();const ass=data.assignments.filter(a=>{const d=parseDate(a.date);return d&&d>=s&&d<=e}).sort((a,b)=>a.date.localeCompare(b.date));const exams=data.exams.filter(x=>{const d=parseDate(x.date);return d&&d>=s&&d<=e});const reads=data.readings.filter(x=>{const d=parseDate(x.date);return d&&d>=s&&d<=e});$('briefingBody').innerHTML=`<h2>COURSEQUEST WEEKLY BRIEFING</h2><p class="meta">${s.toLocaleDateString()} – ${e.toLocaleDateString()}</p><h3>Assignments</h3>${ass.length?ass.map(a=>`<p><b>${a.date}</b> · ${esc(cname(a.course))}: ${esc(a.title)} <span class="meta">(${esc(a.status)})</span></p>`).join(''):'<p>No assignments recorded.</p>'}<h3>Exams</h3>${exams.length?exams.map(x=>`<p><b>${x.date}</b> · ${esc(cname(x.course))}: ${esc(x.title)}</p>`).join(''):'<p>No exams recorded.</p>'}<h3>Readings</h3>${reads.length?reads.map(r=>`<p><b>${r.date}</b> · ${esc(cname(r.course))}: ${esc(r.title)}</p>`).join(''):'<p>No readings recorded.</p>'}<h3>Weekly Priorities</h3><p>1. ________________________________________________</p><p>2. ________________________________________________</p><p>3. ________________________________________________</p><h3>Study Sessions</h3><p>Mon ______ Tue ______ Wed ______ Thu ______ Fri ______ Sat ______ Sun ______</p>`}
+function deleteAllCourseItems(){
+  if(!currentCourse)return;
+  const c=cname(currentCourse);
+  const total=data.assignments.filter(a=>a.course===currentCourse).length+
+              data.readings.filter(r=>r.course===currentCourse).length+
+              data.exams.filter(e=>e.course===currentCourse).length+
+              data.grades.filter(g=>g.course===currentCourse).length;
+  if(!total){alert('This course has no stored items.');return}
+  if(!confirm(`Delete all stored coursework, readings, exams, and grade categories for ${c}? This cannot be undone unless you have a backup.`))return;
+  data.assignments=data.assignments.filter(a=>a.course!==currentCourse);
+  data.readings=data.readings.filter(r=>r.course!==currentCourse);
+  data.exams=data.exams.filter(e=>e.course!==currentCourse);
+  data.grades=data.grades.filter(g=>g.course!==currentCourse);
+  delete data.syllabusNotes[currentCourse];
+  save();renderAll();renderCourse();
+}
+function renderCourse(){if(!currentCourse)return;const c=courses.find(x=>x.id===currentCourse);$('courseTitle').textContent=c.icon+' '+c.name;$('courseDesc').textContent=c.desc;const ass=data.assignments.filter(a=>a.course===c.id),reads=data.readings.filter(r=>r.course===c.id),score=courseGrade(c.id);$('courseDue').textContent=ass.filter(a=>!['Submitted','Graded'].includes(a.status)).length;$('courseReadings').textContent=reads.length;$('courseGrade').textContent=score===null?'—':score.toFixed(1)+'%';$('courseItems').innerHTML=[...ass.map(a=>({...a,kind:'Assignment'})),...reads.map(r=>({...r,kind:'Reading'}))].length?[...ass.map(a=>({...a,kind:'Assignment'})),...reads.map(r=>({...r,kind:'Reading'}))].map(x=>`<div class="item"><div class="itemhead"><div><span class="pill type-${typeClass(x.kind==="Reading"?"Reading":x.type)}" style="color:#071018">${esc(x.kind==="Reading"?"Reading":normalizeType(x.type))}</span> <b>${esc(x.title)}</b><div class="meta">${esc(x.date||'No date')} · ${esc(x.status)}</div></div><button class="btn red noPrint" onclick="${x.kind==='Reading'?`removeItem('readings',${x.id})`:`removeItem('assignments',${x.id})`}">Delete</button></div></div>`).join(''):'<div class="empty">No course items yet.</div>'}
+function parseSyllabus(){const text=$('syllabusText').value,course=$('sCourse').value;if(!text.trim())return;let detected=0,weights=0;const lines=text.split(/\n/).map(x=>x.trim()).filter(Boolean);const dateRe=/\b(0?[1-9]|1[0-2])[\/\-](0?[1-9]|[12]\d|3[01])(?:[\/\-](\d{2,4}))?\b/;const assignmentWords=/exam|midterm|final|test|quiz|paper|essay|presentation|poster|assignment|project|discussion|lab|reflection|review|response|reading|chapter|article|homework|worksheet|problem set/i;lines.forEach(line=>{const dm=line.match(dateRe);if(dm&&assignmentWords.test(line)){
+let year=dm[3]?Number(dm[3]):new Date().getFullYear();if(year<100)year+=2000;
+const date=`${year}-${String(dm[1]).padStart(2,'0')}-${String(dm[2]).padStart(2,'0')}`;
+const title=line.replace(dm[0],'').replace(/^[-–—:,\s]+|[-–—:,\s]+$/g,'')||line;
+const type=normalizeType(line);
+const duplicate=data.assignments.some(a=>a.course===course&&a.date===date&&a.title.toLowerCase()===title.toLowerCase());
+if(!duplicate){data.assignments.push({id:Date.now()+Math.random(),course,title,date,type,points:0,status:'Not started',notes:'Imported from pasted syllabus. Automatically routed across CourseQuest; verify wording and date.'});detected++}
+}
+const wm=line.match(/(.+?)\s+(\d{1,3})\s*%/);if(wm){data.grades.push({id:Date.now()+Math.random(),course,category:wm[1].replace(/[:\-–]+$/,'').trim(),weight:Number(wm[2]),earned:0,possible:0,target:90});weights++}});
+data.syllabusNotes[course]=text;save();$('parseReport').style.display='block';$('parseReport').innerHTML=`Imported <b>${detected}</b> dated items and <b>${weights}</b> weighted grade categories. Exams and quizzes were routed to Exam Headquarters, readings to Reading Tracker, and every dated item to the calendar and weekly board. Please review the detected wording and dates.`;renderAll()}
+function importTextFile(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('syllabusText').value=r.result};r.readAsText(f)}
+function exportAll(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='CourseQuest_Backup.json';a.click();URL.revokeObjectURL(url)}
+function restoreAll(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{data=JSON.parse(r.result);save();renderAll();alert('CourseQuest restored.')}catch(e){alert('Invalid backup file.')}};r.readAsText(f)}
+function seedPublic(){if(data.seeded)return;['Exam 1','Exam 2','Exam 3','Research Paper','Discussion Reviews','Application Presentation'].forEach(t=>data.assignments.push({id:Date.now()+Math.random(),course:'abnormal',title:t,date:'',type:t.includes('Exam')?'Exam':t.includes('Paper')?'Paper':t.includes('Presentation')?'Presentation':'Discussion',points:0,status:'Not started',notes:'Provisional category from a public Westminster Abnormal Psychology syllabus; verify against current syllabus.'}));data.seeded=true;save()}
+function renderAll(){renderDashboard();renderCalendar();renderWeekly();renderGrades();renderExams();renderReadings();renderBriefing();renderTimerLog();if(currentCourse)renderCourse()}
+buildSelects();buildCourseNav();seedPublic();$('todayLabel').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});renderAll();updateClock();
+</script>
+</body></html>

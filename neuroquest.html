@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NeuroQuest Research Binder</title>
+<style>
+:root{
+  --bg:#09101d;--panel:#141d30;--panel2:#1d2942;--text:#eef4ff;--muted:#a9b7d0;
+  --mint:#78d5c5;--gold:#e8c86e;--line:#34415e;--soft:#101827;--danger:#ef9c9c;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#08101b,#11182b);color:var(--text);min-height:100vh}
+button,input,textarea,select{font:inherit}
+header{position:sticky;top:0;z-index:20;background:rgba(8,14,25,.96);border-bottom:1px solid var(--line)}
+.topbar{max-width:1400px;margin:auto;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.brand{font-weight:900;letter-spacing:.08em}.topstats{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--muted)}
+.shell{max-width:1400px;margin:auto;display:grid;grid-template-columns:300px 1fr;gap:18px;padding:18px}
+.sidebar{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;height:calc(100vh - 92px);position:sticky;top:78px;overflow:auto}
+.group{margin:14px 0}.group-title{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:900;margin:8px 7px}
+.folder{display:flex;gap:9px;align-items:center;width:100%;padding:10px 11px;margin:4px 0;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:10px;cursor:pointer;text-align:left}
+.folder:hover,.folder.active{background:var(--panel2);color:var(--mint);border-color:var(--line)}
+main{min-width:0}
+.hero,.card{background:rgba(20,29,48,.97);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 14px 36px rgba(0,0,0,.2)}
+.hero{margin-bottom:18px}
+h1{font-size:clamp(2rem,5vw,4.3rem);margin:.1rem 0 .5rem;line-height:1}
+h2{margin-top:0}.kicker{color:var(--gold);font-weight:900;letter-spacing:.11em;text-transform:uppercase;font-size:.82rem}
+.sub{color:var(--muted);line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.grid.two{grid-template-columns:repeat(2,1fr)}
+.stat{font-size:1.9rem;font-weight:900;color:var(--mint)}
+.progress{height:13px;border-radius:999px;background:#080e18;border:1px solid var(--line);overflow:hidden}.progress div{height:100%;background:linear-gradient(90deg,var(--mint),var(--gold))}
+.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:900;cursor:pointer;background:var(--mint);color:#07110f;margin:5px 6px 5px 0}
+.btn.alt{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn.gold{background:var(--gold)}
+label{display:block;font-weight:800;margin:12px 0 6px}
+input,textarea,select{width:100%;background:#0c1322;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:92px;resize:vertical}
+.entries{margin-top:16px}.entry{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
+.entry-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.entry-title{font-weight:900}.meta{color:var(--muted);font-size:.88rem}
+.tag{display:inline-block;padding:5px 8px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);font-size:.8rem;margin:3px}
+.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.badge{display:inline-block;padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);margin:4px}.badge.on{background:var(--mint);color:#07110f}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.folder-summary{display:none}.folder-summary.active{display:block}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line)}
+@media(max-width:980px){.shell{grid-template-columns:1fr}.sidebar{position:static;height:auto}.grid,.grid.two{grid-template-columns:1fr}}
+@media print{header,.sidebar,.toolbar,.form-card{display:none!important}.shell{display:block;padding:0}.card,.hero{box-shadow:none;border:0;background:white;color:black}.sub,.meta{color:#444}}
+</style>
+</head>
+<body>
+<div style="position:sticky;top:0;z-index:9999;background:#070d18;border-bottom:1px solid #33415f;padding:9px 14px;display:flex;gap:8px;flex-wrap:wrap;font-family:system-ui">
+<a href="index.html" style="color:#fff;text-decoration:none;background:#263653;padding:7px 10px;border-radius:9px">QuestOS</a>
+<a href="coursequest.html" style="color:#071018;text-decoration:none;background:#79d6c5;padding:7px 10px;border-radius:9px;font-weight:800">CourseQuest</a>
+<a href="studyquest.html" style="color:#071018;text-decoration:none;background:#e7c66d;padding:7px 10px;border-radius:9px;font-weight:800">StudyQuest</a>
+<a href="neuroquest.html" style="color:#071018;text-decoration:none;background:#8fb9ff;padding:7px 10px;border-radius:9px;font-weight:800">NeuroQuest</a>
+</div>
+
+<header>
+  <div class="topbar">
+    <div class="brand">NEUROQUEST RESEARCH BINDER 🧠📁</div>
+    <div class="topstats"><span><b data-xp>0</b> XP</span><span>·</span><span data-rank>Research Cadet</span></div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="group">
+      <button class="folder active" onclick="openDashboard()">🏛️ Bureau Dashboard</button>
+    </div>
+    <div id="folderNav"></div>
+    <div class="group">
+      <div class="group-title">Binder Tools</div>
+      <button class="folder" onclick="exportBinder()">💾 Export Binder</button>
+      <button class="folder" onclick="document.getElementById('importFile').click()">📥 Import Binder</button>
+      <input id="importFile" type="file" accept=".json" style="display:none" onchange="importBinder(event)">
+      <button class="folder" onclick="window.print()">🖨️ Print Current Folder</button>
+    </div>
+  </aside>
+
+  <main>
+    <section id="dashboard" class="folder-summary active">
+      <div class="hero">
+        <div class="kicker">Your Digital Research Headquarters</div>
+        <h1>Every project gets a file.</h1>
+        <p class="sub">This version organizes your neuroscience journey like a professional bureau archive: papers, skills, opportunities, conferences, publications, mentors, specialization areas, and proof of progress.</p>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="stat" id="totalEntries">0</div><p>Total filed entries</p></div>
+        <div class="card"><div class="stat" id="activeFolders">0</div><p>Folders in active use</p></div>
+        <div class="card"><div class="stat" data-rank>Research Cadet</div><p>Current clearance rank</p></div>
+      </div>
+      <div class="grid two" style="margin-top:16px">
+        <div class="card">
+          <h2>Binder Completion</h2>
+          <div class="progress"><div id="binderProgress" style="width:0%"></div></div>
+          <p class="sub"><span id="binderPercent">0</span>% of folders contain at least one filed item.</p>
+        </div>
+        <div class="card">
+          <h2>Core Badges</h2>
+          <span class="badge" id="badgeReader">Literature Scout</span>
+          <span class="badge" id="badgeCoder">Code Initiate</span>
+          <span class="badge" id="badgeNetwork">Network Builder</span>
+          <span class="badge" id="badgePresenter">Conference Delegate</span>
+          <span class="badge" id="badgePublisher">Publication Officer</span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Suggested Binder Rhythm</h2>
+        <table>
+          <tr><th>Weekly</th><td>File one paper, one skill note, or one professor/lab contact.</td></tr>
+          <tr><th>Monthly</th><td>Review opportunities, deadlines, grants, and conference openings.</td></tr>
+          <tr><th>Each semester</th><td>Add one major artifact: poster, proposal, code project, presentation, or publication step.</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="folderView" class="folder-summary">
+      <div class="hero">
+        <div class="kicker" id="folderGroup"></div>
+        <h1 id="folderTitle"></h1>
+        <p class="sub" id="folderDescription"></p>
+        <div class="toolbar">
+          <button class="btn gold" onclick="awardFolderXP()">Complete Folder Action +5 XP</button>
+          <button class="btn alt" onclick="window.print()">Print Folder</button>
+        </div>
+      </div>
+
+      <div class="card form-card">
+        <h2>File a New Entry</h2>
+        <div class="grid two">
+          <label>Entry title<input id="entryTitle" placeholder="Title, project, person, paper, or opportunity"></label>
+          <label>Status<select id="entryStatus"><option>New</option><option>In progress</option><option>Waiting</option><option>Completed</option><option>Archived</option></select></label>
+        </div>
+        <div class="grid two">
+          <label>Date or deadline<input id="entryDate" type="date"></label>
+          <label>Link, citation, or location<input id="entryLink" placeholder="URL, DOI, folder path, email, or citation"></label>
+        </div>
+        <label>Notes<textarea id="entryNotes" placeholder="Main points, next steps, reflections, calculations, or decisions"></textarea></label>
+        <label>Tags<input id="entryTags" placeholder="Comma-separated tags"></label>
+        <button class="btn" onclick="addEntry()">File Entry</button>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="entry-head"><h2>Filed Materials</h2><span class="meta" id="folderCount">0 entries</span></div>
+        <div id="entries" class="entries"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const folderGroups = [
+  {
+    group:'Core Research',
+    folders:[
+      ['papers','📚','Research Papers to Read','Track papers, reading status, claims, methods, calculations, and your final verdict.'],
+      ['projects','🧪','Research Projects','Organize current, past, and proposed studies, including NCUR and class research.'],
+      ['ideas','💡','Research Ideas','Capture questions, hypotheses, possible methods, and future project seeds.'],
+      ['methods','🔬','Research Methods','Store notes on experimental design, validity, reliability, ethics, and measurement.'],
+      ['statistics','📊','Statistics','Track concepts, formulas, tests, jamovi work, interpretation, and calculation practice.']
+    ]
+  },
+  {
+    group:'Technical Skills',
+    folders:[
+      ['python','🐍','Python Notes','Lessons, code snippets, neuroscience applications, mini-projects, and certificates.'],
+      ['r','📈','R & RStudio Notes','R syntax, ggplot, statistical analyses, scripts, and reproducible research practice.'],
+      ['jamovi','🧩','jamovi Practice','Analyses completed in jamovi, outputs interpreted, and transitions into R code.'],
+      ['software','💻','Research Software','SPSS, Zotero, Obsidian, Excel, reference managers, and other research tools.']
+    ]
+  },
+  {
+    group:'Opportunities',
+    folders:[
+      ['reu','🌐','REU Applications','Programs, deadlines, requirements, application progress, and recommendation letters.'],
+      ['internships','🏢','Internships & Labs','Summer programs, autism centers, hospital placements, and research assistant roles.'],
+      ['professors','👥','Professor Contacts','Faculty interests, papers read, emails, meetings, follow-ups, and relationship notes.'],
+      ['grants','💰','Travel Grants & Funding','Travel support, research funding, application requirements, and award status.'],
+      ['monthly','🗓️','Monthly Opportunity Review','A running monthly scan of openings, deadlines, and priority applications.']
+    ]
+  },
+  {
+    group:'Conferences & Publications',
+    folders:[
+      ['conferences','🎤','Conferences','Events, deadlines, abstracts, registration, travel, badges, and presentation plans.'],
+      ['ncur','🏛️','NCUR','Proposals, advisor approval, posters, travel documents, and conference preparation.'],
+      ['urac','🏫','URAC','School research event materials, deadlines, posters, and presentation notes.'],
+      ['publications','📝','Publications','Manuscripts, target journals, review status, revisions, and publication records.'],
+      ['ajur','📜','AJUR Submission','Manuscript version, advisor notes, submission checklist, reviewer comments, and decisions.'],
+      ['badges','🎟️','Conference Badges & Memorabilia','Badge records, programs, photos, contacts, certificates, and binder keepsakes.']
+    ]
+  },
+  {
+    group:'Specialization',
+    folders:[
+      ['autism','🧩','Autism Research','Papers, labs, centers, theories, methods, and opportunities related to autism research.'],
+      ['pediatric','🧠','Pediatric Neuropsychology','Assessment, development, cognition, clinical research, and career pathway notes.'],
+      ['developmental','🌱','Developmental Neuroscience','Brain development, learning, memory, childhood, and adolescence.'],
+      ['learning','🐀','Learning & Memory','Behavioral neuroscience, conditioning, memory systems, and laboratory work.']
+    ]
+  },
+  {
+    group:'Professional Archive',
+    folders:[
+      ['portfolio','🗂️','Research Portfolio','Your strongest finished work, posters, papers, code, presentations, and evidence of growth.'],
+      ['certificates','🏅','Certificates & Training','CITI, workshops, software certificates, safety training, and professional development.'],
+      ['cv','📄','CV & Applications','CV versions, personal statements, cover letters, and application materials.'],
+      ['contacts','📇','Professional Contacts','Researchers, graduate students, conference contacts, mentors, and collaborators.'],
+      ['reflections','🪞','Research Reflections','What worked, what failed, what changed, and what you want to do next.']
+    ]
+  }
+];
+
+let state;
+try{state=JSON.parse(localStorage.getItem('neuroquestBinder'))||{xp:0,entries:{},actions:[]}}catch(e){state={xp:0,entries:{},actions:[]}}
+let currentFolder=null;
+
+function save(){localStorage.setItem('neuroquestBinder',JSON.stringify(state))}
+function allFolders(){return folderGroups.flatMap(g=>g.folders.map(f=>({group:g.group,id:f[0],icon:f[1],title:f[2],desc:f[3]})))}
+function buildNav(){
+  const nav=document.getElementById('folderNav');
+  nav.innerHTML=folderGroups.map(g=>`<div class="group"><div class="group-title">${g.group}</div>${g.folders.map(f=>`<button class="folder" data-folder="${f[0]}" onclick="openFolder('${f[0]}')">${f[1]} ${f[2]}</button>`).join('')}</div>`).join('');
+}
+function rankName(){
+  const ranks=[[0,'Research Cadet'],[25,'Literature Scout'],[60,'Methods Analyst'],[110,'Evidence Investigator'],[180,'Neuroscience Attaché'],[260,'Chief Research Strategist']];
+  let r=ranks[0][1];ranks.forEach(x=>{if(state.xp>=x[0])r=x[1]});return r;
+}
+function updateDashboard(){
+  const folders=allFolders();
+  const used=folders.filter(f=>(state.entries[f.id]||[]).length>0).length;
+  const total=folders.reduce((n,f)=>n+(state.entries[f.id]||[]).length,0);
+  const pct=Math.round((used/folders.length)*100);
+  document.querySelectorAll('[data-xp]').forEach(e=>e.textContent=state.xp);
+  document.querySelectorAll('[data-rank]').forEach(e=>e.textContent=rankName());
+  document.getElementById('totalEntries').textContent=total;
+  document.getElementById('activeFolders').textContent=used;
+  document.getElementById('binderProgress').style.width=pct+'%';
+  document.getElementById('binderPercent').textContent=pct;
+  document.getElementById('badgeReader').classList.toggle('on',(state.entries.papers||[]).length>=3);
+  document.getElementById('badgeCoder').classList.toggle('on',((state.entries.python||[]).length+(state.entries.r||[]).length)>=3);
+  document.getElementById('badgeNetwork').classList.toggle('on',((state.entries.professors||[]).length+(state.entries.contacts||[]).length)>=3);
+  document.getElementById('badgePresenter').classList.toggle('on',((state.entries.conferences||[]).length+(state.entries.ncur||[]).length+(state.entries.urac||[]).length)>=2);
+  document.getElementById('badgePublisher').classList.toggle('on',((state.entries.publications||[]).length+(state.entries.ajur||[]).length)>=2);
+}
+function openDashboard(){
+  currentFolder=null;
+  document.getElementById('dashboard').classList.add('active');
+  document.getElementById('folderView').classList.remove('active');
+  document.querySelectorAll('.folder').forEach(b=>b.classList.remove('active'));
+  updateDashboard();
+}
+function openFolder(id){
+  const f=allFolders().find(x=>x.id===id);if(!f)return;
+  currentFolder=id;
+  document.getElementById('dashboard').classList.remove('active');
+  document.getElementById('folderView').classList.add('active');
+  document.getElementById('folderGroup').textContent=f.group;
+  document.getElementById('folderTitle').textContent=f.icon+' '+f.title;
+  document.getElementById('folderDescription').textContent=f.desc;
+  document.querySelectorAll('[data-folder]').forEach(b=>b.classList.toggle('active',b.dataset.folder===id));
+  clearForm();renderEntries();
+}
+function clearForm(){
+  ['entryTitle','entryDate','entryLink','entryNotes','entryTags'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('entryStatus').value='New';
+}
+function addEntry(){
+  if(!currentFolder)return;
+  const title=document.getElementById('entryTitle').value.trim();
+  if(!title){alert('Give the entry a title first.');return}
+  const item={
+    id:Date.now(),
+    title,
+    status:document.getElementById('entryStatus').value,
+    date:document.getElementById('entryDate').value,
+    link:document.getElementById('entryLink').value.trim(),
+    notes:document.getElementById('entryNotes').value.trim(),
+    tags:document.getElementById('entryTags').value.split(',').map(x=>x.trim()).filter(Boolean),
+    created:new Date().toLocaleDateString()
+  };
+  if(!state.entries[currentFolder])state.entries[currentFolder]=[];
+  state.entries[currentFolder].unshift(item);
+  state.xp+=3;save();clearForm();renderEntries();updateDashboard();
+}
+function deleteEntry(id){
+  if(!confirm('Remove this filed entry?'))return;
+  state.entries[currentFolder]=(state.entries[currentFolder]||[]).filter(x=>x.id!==id);
+  save();renderEntries();updateDashboard();
+}
+function renderEntries(){
+  const list=state.entries[currentFolder]||[];
+  document.getElementById('folderCount').textContent=list.length+' '+(list.length===1?'entry':'entries');
+  const box=document.getElementById('entries');
+  if(!list.length){box.innerHTML='<div class="empty">This folder is waiting for its first piece of evidence.</div>';return}
+  box.innerHTML=list.map(x=>`<div class="entry">
+    <div class="entry-head"><div><div class="entry-title">${esc(x.title)}</div><div class="meta">${esc(x.status)}${x.date?' · '+esc(x.date):''} · Filed ${esc(x.created)}</div></div><button class="btn alt" onclick="deleteEntry(${x.id})">Remove</button></div>
+    ${x.link?`<p><b>Reference:</b> ${esc(x.link)}</p>`:''}
+    ${x.notes?`<p>${esc(x.notes).replace(/\n/g,'<br>')}</p>`:''}
+    <div>${x.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+  </div>`).join('');
+}
+function awardFolderXP(){
+  if(!currentFolder)return;
+  const token=currentFolder+'-'+new Date().toISOString().slice(0,10);
+  if(!state.actions.includes(token)){state.actions.push(token);state.xp+=5;save();updateDashboard();alert('Folder action logged. +5 XP');}
+  else alert('You already logged this folder action today.');
+}
+function exportBinder(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='NeuroQuest_Binder_Backup.json';a.click();URL.revokeObjectURL(url);
+}
+function importBinder(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{try{const data=JSON.parse(reader.result);state=data;save();openDashboard();alert('Binder imported.');}catch(e){alert('That file is not a valid NeuroQuest backup.')}};
+  reader.readAsText(file);
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+buildNav();updateDashboard();
+</script>
+</body>
+</html>
